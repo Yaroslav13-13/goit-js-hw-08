@@ -65,32 +65,46 @@ const images = [
 ];
 
 const galleryBox = document.querySelector('.gallery');
+
 const galleryImages = images
   .map(
     ({ preview, original, description }) =>
       `<li class="gallery-item">
-    <a class="gallery-link" href="${original}">
-      <img
-        class="gallery-image"
-        src="${preview}"
-        data-sorce="${original}"
-        alt="${description}"
-      />
-      <a/>
-</li>`
+        <a class="gallery-link" href="${original}">
+          <img
+            class="gallery-image"
+            src="${preview}"
+            data-source="${original}"
+            alt="${description}"
+          />
+        </a>
+      </li>`
   )
   .join('');
+
 galleryBox.innerHTML = galleryImages;
 
 galleryBox.addEventListener('click', (event) => {
   event.preventDefault();
   const imgEl = event.target;
-  if (imgEl.nodeName !== 'IMG') {
-    return;
-  }
-  const imageUrl = imgEl.dataset.sorce;
+
+  if (imgEl.nodeName !== 'IMG') return;
+
+  const imageUrl = imgEl.dataset.source;
+
   const instance = basicLightbox.create(
-    `<img src="${imageUrl}" alt="${imgEl.alt}" width="800"/>`
+    `
+    <img src="${imageUrl}" alt="${imgEl.alt}" width="800" />
+  `,
+    {
+      onShow: (instance) => {
+        const modalImage = instance.element().querySelector('img');
+        modalImage.addEventListener('click', () => {
+          instance.close();
+        });
+      },
+    }
   );
+
   instance.show();
 });
